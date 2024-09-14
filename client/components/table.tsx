@@ -122,7 +122,7 @@ export function TableComp() {
     const totalVisiblePages = 5;
     let startPage = Math.max(
       currentPage - Math.floor(totalVisiblePages / 2),
-      1
+      1,
     );
     let endPage = startPage + totalVisiblePages - 1;
 
@@ -320,8 +320,9 @@ export function TableComp() {
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-center mt-4">
-        <Pagination>
+      <div className="flex justify-end mt-4">
+        <Pagination className="flex items-center">
+          {/* Previous button */}
           <PaginationPrevious
             className="mr-2 px-3 py-2"
             disabled={currentPage === 1}
@@ -330,6 +331,7 @@ export function TableComp() {
             &lt;
           </PaginationPrevious>
 
+          {/* Page numbers */}
           <PaginationContent className="flex items-center space-x-2">
             {getVisiblePageNumbers().map((page) => (
               <PaginationItem key={page} active={page === currentPage}>
@@ -340,6 +342,7 @@ export function TableComp() {
             ))}
           </PaginationContent>
 
+          {/* Next button */}
           <PaginationNext
             className="ml-2 px-3 py-2"
             disabled={currentPage === totalPage}
