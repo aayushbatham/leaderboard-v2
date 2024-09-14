@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { FaThLarge, FaListUl } from "react-icons/fa";
+import { Percent, Plus } from "lucide-react";
 
 import { daily_mock_data } from "@/public/daily_mock_data";
 import { weekly_mock_data } from "@/public/weekly_mock_data";
@@ -22,6 +23,7 @@ import {
   PaginationPrevious,
   PaginationNext,
 } from "@/components/ui/pagination";
+import { Separator } from "@/components/ui/separator";
 
 const icons = {
   gold: "/first.png",
@@ -35,60 +37,35 @@ const rankColors = {
   3: "border-amber-600", // Bronze
 };
 
-function RankIcon({ rank, size, src1, src2, src3, src4 }) {
-  let iconSrc;
-
-  // Determine the appropriate src based on the rank
+function RankIcon({ rank, size }) {
   switch (rank) {
     case 1:
-      iconSrc = src1 || icons.gold;
-      break;
+      return (
+        <img
+          alt="Gold"
+          src={icons.gold}
+          style={{ marginRight: 8, width: size || 20 }}
+        />
+      );
     case 2:
-      iconSrc = src2 || icons.silver;
-      break;
+      return (
+        <img
+          alt="Silver"
+          src={icons.silver}
+          style={{ marginRight: 8, width: size || 20 }}
+        />
+      );
     case 3:
-      iconSrc = src3 || icons.bronze;
-      break;
+      return (
+        <img
+          alt="Bronze"
+          src={icons.bronze}
+          style={{ marginRight: 8, width: size || 20 }}
+        />
+      );
     default:
-      iconSrc = src4;
+      return <span style={{ marginRight: 8 }}>{rank}</span>;
   }
-
-  // If there is no specific icon for the rank and it's not in the default case, return just the rank
-  if (!iconSrc) {
-    return <span style={{ marginRight: 8 }}>{rank}</span>;
-  }
-
-  // If iconSrc is present, return an image with rank overlay
-  return (
-    <div
-      style={{
-        position: "relative",
-        display: "inline-block",
-        marginRight: 8,
-        width: size || 20,
-        height: size || 20,
-      }}
-    >
-      <img
-        alt={`Rank ${rank}`}
-        src={iconSrc}
-        style={{ width: "100%", height: "100%" }}
-      />
-      <span
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          color: "#0a0f10",
-          fontWeight: "bold",
-          fontSize: "0.9em",
-        }}
-      >
-        {rank}
-      </span>
-    </div>
-  );
 }
 
 export function TableComp() {
@@ -122,7 +99,7 @@ export function TableComp() {
     const totalVisiblePages = 5;
     let startPage = Math.max(
       currentPage - Math.floor(totalVisiblePages / 2),
-      1
+      1,
     );
     let endPage = startPage + totalVisiblePages - 1;
 
@@ -248,71 +225,85 @@ export function TableComp() {
           {currentRows.map((invoice, index) => (
             <Card
               key={index}
-              className="bg-[#141313] p-4 rounded-2xl shadow-md relative"
+              className={`bg-[#141313] p-2 border-2 rounded-lg max-h-[35vh] shadow-sm ${
+                rankColors[invoice.rank] || "border-transparent"
+              }`}
             >
-              {/* Rank Badge */}
-              <div className="absolute top-0 left-1 ml-1">
-                <RankIcon
-                  className="bg-yellow-500 rounded-full p-1"
-                  rank={invoice.rank}
-                  size={30}
-                  src1={"/rank1.svg"}
-                  src2={"/rank2.svg"}
-                  src3={"/rank3.svg"}
-                  src4={"/rank-dark.svg"}
-                />
-              </div>
-
-              <CardHeader className="flex items-center flex-col p-4 ">
-                {/* Profile Image and Info */}
-                <div className="flex gap-1 w-full">
-                  <div className="flex mr-2 ">
-                    <div className="">
-                      <img
-                        alt="Profile"
-                        className="w-12 h-12 rounded-full border-2 border-gray-600"
-                        // src=
-                        src={invoice.profilePicture || "/profile-temp.png"}
-                      />
-                    </div>
-                    <div className="flex flex-col ml-3 text-left">
-                      <span className="text-lg font-semibold text-white">
-                        {invoice.username}
+              <CardHeader className="flex mb-1 w-full border border-b-2 rounded-lg flex flex-col relative">
+                <div className="ml-auto absolute top-0 left-0 rounded-lg pl-1 pt-1 text-gray-400">
+                  <RankIcon rank={invoice.rank} size={40} />
+                </div>
+                <div className="flex gap-x-2 items-center ">
+                  <img
+                    alt="Profile"
+                    className="w-10 h-10 rounded-full mr-2"
+                    src={invoice.profilePicture}
+                  />
+                  <div className="flex flex-col ">
+                    <span className="text-base font-semibold text-white text-start">
+                      {invoice.username}
+                    </span>
+                    <p className="text-sm text-center font-medium text-gray-400 mt-1">
+                      Total Trading Volume:{" "}
+                      <span className="font-bold">
+                        {invoice.totalTradingVolume}
                       </span>
-                      <span className="text-sm text-gray-400 text-left">
-                        Total Trading Volume {invoice.totalTradingVolume}
-                      </span>
-                    </div>
+                    </p>
                   </div>
-                  {/* Follow Button */}
-                  <button className="bg-[#FCD434] text-gray-900 ml-auto text-sm font-bold px-4 py-1 rounded-lg">
-                    WinRate: <span> {invoice.averageWinRate}</span>
-                  </button>
+
+                  <div className="ml-auto bg-[#FCD434] px-3 rounded-lg shadow-md">
+                    <p className="font-bold mb-1 text-gray-800 text-sm text-center mt-1">
+                      Win Rate: <br />{" "}
+                      <span className="text-sm text-center ml-2">
+                        {" "}
+                        {invoice.averageWinRate}{" "}
+                      </span>
+                      %
+                    </p>
+                  </div>
                 </div>
               </CardHeader>
-
-              <CardContent className="mt-1 ml-4 flex justify-between p-1">
-                {/* ROI Section */}
-                <div className="text-left flex-1">
-                  <span className="text-sm text-gray-400">Average ROI</span>
-                  <p className="text-[#00F601] font-bold text-3xl mt-1">
-                    +{invoice.averageROI}%
+              <CardContent className="text-sm flex items-center mt-3">
+                <div className="flex flex-col p-3 items-center flex-1 ">
+                  {" "}
+                  <span className="text-sm text-[#B4B4B8]">
+                    Average ROI
+                  </span>{" "}
+                  <p className="font-bold text-lg mt-2">
+                    {" "}
+                    <Plus className="inline h-3 w-3 mb-1 text-[#12C881]" />{" "}
+                    <span className="text-2xl font-bold text-[#1bad75] ">
+                      {invoice.averageROI}
+                    </span>{" "}
+                    <Percent className="inline h-3 w-3 mb-1 text-[#12C881]" />
                   </p>
                 </div>
-
-                {/* PNL Section */}
-                <div className="text-left flex-1">
-                  <span className="text-sm text-gray-400">PNL (USD)</span>
-                  <p className="text-[#00F601] font-bold text-3xl mt-1">
-                    +{invoice.PNL}USD
+                <div className="flex flex-col p-3 items-center flex-1 ">
+                  {" "}
+                  <span className="text-sm text-[#B4B4B8]">PNL (USD)</span>{" "}
+                  <p className="font-bold text-lg mt-2">
+                    {" "}
+                    <Plus className="inline h-3 w-3 mb-1 text-[#12C881]" />{" "}
+                    <span className="text-2xl font-bold text-[#1bad75]">
+                      {invoice.PNL} 56
+                    </span>{" "}
                   </p>
                 </div>
               </CardContent>
-              <div className="flex items-center">
-                <span className="bg-transparent ml-1 text-white text-[12px] px-4 py-1 mt-1 rounded-sm">
-                  Total PNL: {invoice.TotalPNL}{" "}
-                  <span className="text-[#00F601]"> USD</span>
-                </span>
+              <Separator />
+
+              <div className="flex items-center justify-evenly ">
+                <div className="mt-1 ">
+                  <p className="font-bold text-gray-400 text-sm">
+                    Total PNL :{" "}
+                    <span className="text-[#00F601] pl-1">
+                      {invoice.TotalPNL}5992
+                    </span>{" "}
+                  </p>
+                </div>
+                <div className="mt-1 text-center text-gray-400 text-sm">
+                  {invoice.date}
+                </div>
               </div>
             </Card>
           ))}
